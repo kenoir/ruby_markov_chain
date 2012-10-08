@@ -5,7 +5,7 @@ module MarkovGenerator
 
     def initialize(length = 2)
       @prefix_length = length
-    
+
       super(length,nil)
     end
 
@@ -63,7 +63,7 @@ module MarkovGenerator
 
       prefix = Prefix.new(@prefix_length)
 
-      maximum_length.times {
+      maximum_length.times do
         word_list = @chain[prefix.string] 
         index = determine_index(word_list)
         word = word_list[index]
@@ -71,7 +71,7 @@ module MarkovGenerator
         generated_chain.push(word) 
         prefix.shift
         prefix.push(word)
-      }
+      end
 
       generated_chain  
     end
@@ -85,10 +85,38 @@ module MarkovGenerator
 
   def self.run!
     markov_chain = MarkovChain.new
-    corpus = IO.read('corpus.txt') 
+ 
+    puts "\n"
+    puts "Generate your own garbled nursery rhymes!"
+    puts "\n"
+    puts "Available files: "
+    files = Dir.glob("*.{txt}") 
 
-    markov_chain.build(corpus)
-    puts markov_chain.generate(20).join(" ")
+    files.each_with_index do | value, index |
+      puts "- #{value}"
+    end
+
+    puts "\n"
+
+    loop do
+
+      begin
+        puts "Enter filename (or 'q' to exit): "
+        STDOUT.flush  
+        filename = gets.chomp 
+
+        exit if filename == "q"
+
+        corpus = IO.read(filename) 
+        markov_chain.build(corpus)
+        2.times {
+          puts markov_chain.generate(500).join(" ")
+        }
+      rescue Errno::ENOENT => e 
+        puts "Whoops, something went wrong: #{e.message}"
+      end
+
+    end
   end
 
 end
