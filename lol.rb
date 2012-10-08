@@ -1,5 +1,71 @@
 module Insultatron
 
+  class IO
+    def get_word
+      word = nil
+      while c = self.read(1)
+        if c =~ /\s/
+          break if word
+        else
+          word||=""
+          word << c
+        end
+      end
+      word
+    end
+  end
+
+  class Prefix < Array
+
+    attr :prefix_length
+
+    def initialize(length = 2)
+      @prefix_length = length
+
+      super()
+    end
+
+    def string
+      raise "Not enought elements in prefix!" if count < @prefix_length
+
+      string = ""
+      self.each do | element |
+        string += element
+      end
+
+      string
+    end
+
+    def []=(index,value)
+      raise "Index > Prefix length!" if index >= @prefix_length 
+
+      super(index,value)
+    end
+
+    def push(value)
+      raise "Prefix full!" if count == @prefix_length
+
+      super(value)
+    end
+  end
+
+  class MarkovChain
+
+    attr :chain
+
+    def initialize
+      @chain = Hash.new
+    end
+
+    def build(stream)
+      raise "Stream must be instance of IO" if not stream.instance_of? IO
+
+
+
+    end
+
+  end
+
   class InsultGenerator
 
     def modifier
@@ -28,6 +94,17 @@ module Insultatron
   end
 
   def self.run!
+    prefix = Prefix.new
+
+    prefix.push("hi")
+    prefix.push("there")
+
+    puts prefix.string
+
+    prefix.shift
+
+    puts prefix.inspect
+
     insult_generator = InsultGenerator.new
     insult_generator.insult!
   end
